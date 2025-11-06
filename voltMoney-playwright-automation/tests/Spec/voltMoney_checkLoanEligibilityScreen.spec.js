@@ -69,4 +69,12 @@ test.describe("voltMoney_checkLoanEligibilityScreen_UI_Functional_Tests", () => 
     let signin = await pom.getcheckLoanEligibilityPage().clicksignIn();
     expect(signin).toBe(testData.headersLinkUrlAssertion.signin);
   });
+  test("TC_HOME_06 : Check go to terms and condition ", async ({
+    page,
+    utils,
+    pom,
+  }) => {
+    let signin = await pom.getcheckLoanEligibilityPage().clickTnc();
+    expect(signin).toBe(testData.headersLinkUrlAssertion.tnc);
+  });
 });

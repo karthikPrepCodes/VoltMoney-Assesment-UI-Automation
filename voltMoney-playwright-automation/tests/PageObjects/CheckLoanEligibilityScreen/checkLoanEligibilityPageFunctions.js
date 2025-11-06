@@ -62,5 +62,15 @@ class checkLoanEligibilityPage {
   async clickCheckELigibilityIn15Sec() {
     await this.actions.click(this.selectors.checkEligibilityIn15sHeader);
   }
+  async clickTnc() {
+    const [newPage] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      this.actions.click(this.selectors.goTotermsAndConditions),
+    ]);
+
+    await newPage.waitForLoadState("load");
+    const newTabUrl = newPage.url();
+    return newTabUrl;
+  }
 }
 module.exports = { checkLoanEligibilityPage };
