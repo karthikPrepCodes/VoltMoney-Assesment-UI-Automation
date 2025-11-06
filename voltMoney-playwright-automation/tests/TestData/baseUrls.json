@@ -1,0 +1,11 @@
+{
+  "QA": {
+    "baseUrl": "https://voltmoney.qa.in/check-loan-eligibility-against-mutual-funds"
+  },
+  "SIT": {
+    "baseUrl": "https://voltmoney.sit.in/check-loan-eligibility-against-mutual-funds"
+  },
+  "PROD": {
+    "baseUrl": "https://voltmoney.in/check-loan-eligibility-against-mutual-funds"
+  }
+}
