@@ -4,7 +4,8 @@
     "faqs": "https://voltmoney.in/check-loan-eligibility-against-mutual-funds#faq",
     "contact": "https://voltmoney.in/contact",
     "about": "https://voltmoney.in/about",
-    "signin": "https://app.voltmoney.in/?startnew=true"
+    "signin": "https://app.voltmoney.in/?startnew=true",
+    "tnc": "https://voltmoney.in/terms?showHeader=false"
   },
   "checkEligibilityCTA": {
     "mobileNumber": "9999999999",
