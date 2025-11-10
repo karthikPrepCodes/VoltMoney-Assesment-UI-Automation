@@ -2,8 +2,7 @@ pipeline {
   agent any
 
   tools {
-    // Change the name below to match the NodeJS tool name from Manage Jenkins -> Global Tool Configuration
-    nodejs "node18"
+    nodejs "node18" // make sure this name matches your NodeJS tool in Jenkins -> Global Tool Configuration
   }
 
   environment {
@@ -17,14 +16,21 @@ pipeline {
       }
     }
 
-    stage('Install dependencies') {
+    // change into the subfolder where your Playwright package.json lives
+    stage('Install dependencies (project)') {
       steps {
-        // If you have package-lock.json use npm ci, else npm install
-        script {
-          if (fileExists('package-lock.json')) {
-            sh 'npm ci --no-audit --no-fund'
-          } else {
-            sh 'npm install --no-audit --no-fund'
+        dir('voltMoney-playwright-automation') {
+          script {
+            if (fileExists('package-lock.json') || fileExists('package.json')) {
+              // prefer npm ci when lockfile present; fallback to npm install
+              if (fileExists('package-lock.json')) {
+                sh 'npm ci --no-audit --no-fund'
+              } else {
+                sh 'npm install --no-audit --no-fund'
+              }
+            } else {
+              error "package.json not found in voltMoney-playwright-automation — ensure tests repo has package.json"
+            }
           }
         }
       }
@@ -32,42 +38,41 @@ pipeline {
 
     stage('Install Playwright browsers') {
       steps {
-        // ensure browsers are installed (required at least once)
-        sh 'npx playwright install --with-deps'
+        dir('voltMoney-playwright-automation') {
+          sh 'npx playwright install --with-deps'
+        }
       }
     }
 
     stage('Run Playwright Tests') {
       steps {
-        // run tests; change CLI flags if you want specific folder/project
-        sh 'npx playwright test --reporter=html'
+        dir('voltMoney-playwright-automation') {
+          // run playwright tests; adjust flags/projects as needed
+          sh 'npx playwright test --reporter=html'
+        }
       }
     }
 
     stage('Archive & Publish Report') {
       steps {
-        // archive and publish html report
-        archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-        publishHTML(target: [
-          reportDir: 'playwright-report',
-          reportFiles: 'index.html',
-          reportName: 'Playwright HTML Report',
-          keepAll: true
-        ])
+        dir('voltMoney-playwright-automation') {
+          archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: false
+          publishHTML(target: [
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'Playwright HTML Report',
+            keepAll: true
+          ])
+        }
       }
     }
   }
 
   post {
-    success {
-      echo "Playwright tests finished SUCCESS"
-    }
-    failure {
-      echo "Playwright tests FAILED"
-    }
+    success { echo "Playwright tests finished SUCCESS" }
+    failure { echo "Playwright tests FAILED" }
     always {
-      // you can add cleanup steps here
-      sh 'echo Build finished at $(date)'
+      echo "Build finished at $(date)"
     }
   }
 }
