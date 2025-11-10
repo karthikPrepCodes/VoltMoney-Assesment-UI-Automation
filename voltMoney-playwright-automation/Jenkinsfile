@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-    nodejs "node18" // make sure this name matches your NodeJS tool in Jenkins -> Global Tool Configuration
+    nodejs "node18" // ensure this matches your NodeJS tool name in Jenkins
   }
 
   environment {
@@ -16,13 +16,11 @@ pipeline {
       }
     }
 
-    // change into the subfolder where your Playwright package.json lives
     stage('Install dependencies (project)') {
       steps {
         dir('voltMoney-playwright-automation') {
           script {
             if (fileExists('package-lock.json') || fileExists('package.json')) {
-              // prefer npm ci when lockfile present; fallback to npm install
               if (fileExists('package-lock.json')) {
                 sh 'npm ci --no-audit --no-fund'
               } else {
@@ -47,7 +45,6 @@ pipeline {
     stage('Run Playwright Tests') {
       steps {
         dir('voltMoney-playwright-automation') {
-          // run playwright tests; adjust flags/projects as needed
           sh 'npx playwright test --reporter=html'
         }
       }
@@ -69,10 +66,15 @@ pipeline {
   }
 
   post {
-    success { echo "Playwright tests finished SUCCESS" }
-    failure { echo "Playwright tests FAILED" }
+    success {
+      echo "Playwright tests finished SUCCESS"
+    }
+    failure {
+      echo "Playwright tests FAILED"
+    }
     always {
-      echo "Build finished at $(date)"
+      // use sh for shell substitution so Groovy doesn't try to parse $
+      sh 'echo Build finished at $(date)'
     }
   }
 }
